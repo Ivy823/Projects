@@ -1,0 +1,926 @@
+##################Import CSV & basic statistical analysis#######################
+import csv
+with open('mpg.csv') as practice1:
+    mpg = list(csv.DictReader(practice1))
+    
+mpg[:3]
+
+len(mpg) # of obs
+mpg[0].keys() # vars' name
+# convert characteristics to values
+sum(float(d['var1']) for d in mpg) / len(mpg)
+sum(float(d['var2']) for d in mpg) / len(mpg)
+
+# see the number of mpg grouped by # of cylinders
+cylinders = set(d['var3'] for d in mpg)
+cylinders
+
+CtyMpgByCyl = []
+
+for c in cylinders:
+    summpg = 0
+    cyltypecount = 0
+    for d in mpg:
+        if d['cyl'] == c:
+            summpg += float(d['city'])
+            cyltypecount += 1
+    CtyMpgByCyl.append((c, summpg / cyltypecount))
+
+CtyMpgByCyl.sort(key=lambda x:x[0])
+CtyMpgByCyl
+
+
+vehicleclass = set(d['class'] for d in mpg)
+vehicleclass
+
+HwyMpgByClass = []
+for t in vehicleclass: # iterate over all the vehicle classes
+    summpg = 0
+    vclasscount = 0
+    for d in mpg:
+        if d['class'] == t:
+            summpg += float(d['hwy'])
+            vclasscount += 1 # increment the count
+    HwyMpgByClass.append((t, summpg / vclasscount)) # append the tuple ('class','ave mpg')
+    
+
+HwyMpgByClass.sort(key=lambda x:x[1])
+HwyMpgByClass
+
+#########################Python Dates and Times#############################
+import datetime as dt
+import time as tm
+
+tm.time()
+dtnow = dt.datetime.fromtimestamp(tm.time())
+dtnow
+dtnow.year, dtnow.month, dtnow.day, dtnow.hour, dtnow.minute, dtnow.second
+
+delta = dt.timedelta(days = 100)
+delta
+
+today = dt.date.today
+today-delta
+today > today-delta
+
+
+#########################Python Objects, Map()#############################
+
+# define a class as the class keyword
+class Person:
+    department = 'School of Info'
+    
+    def set_name(self, new_name):
+        self.name = new_name
+    def set_location(self, new_location):
+        self.location = new_location
+# check Python documentation from Python tutorial
+        
+# Functional programming: map built-in
+# map(function, iterable, ...)
+store1 = (10.00, 11.00, 12.34, 2.34)
+store2 = (9.00, 11.10, 12.30, 2.33)    
+cheapest = map(min, store1, store2)
+cheapest # return a map object
+
+# data cleaning task:
+people = ['Dr. Christopher Brooks', 'Dr. Kevyn Collins-Thompson', 'Dr. VG Vinod Vydiswaran', 'Dr. Daniel Romero']
+
+def split_title_and_name(person):
+    title = person.split()[0]
+    lastname = person.split()[-1]
+    return '{} {}'.format(title, lastname)
+
+list(map(split_title_and_name, people))
+
+#########################Lambda & List Comprehensions#############################
+# Lambda's are Python's way of creating anonymous functions. 
+# These are the same as other functions, but they have no name. 
+
+my_function = lambda a,b,c : a + b
+my_function(1,2,3)
+
+people = ['Dr. Christopher Brooks', 'Dr. Kevyn Collins-Thompson', 'Dr. VG Vinod Vydiswaran', 'Dr. Daniel Romero']
+
+def split_title_and_name(person):
+    return person.split()[0] + ' ' + person.split()[-1]
+
+#option 1
+for person in people:
+    print(split_title_and_name(person) == (lambda x: x.split()[0] + ' ' + x.split()[-1])(person))
+
+#option 2
+list(map(split_title_and_name, people)) == list(map(lambda person: person.split()[0] + ' ' + person.split()[-1], people))
+
+type(lambda x: x+1) # returns function
+[x**2 for x in range(10)] # example of 
+
+######## list comprehension #######
+my_list = []
+for number in range(0,1000):
+    if number % 2 == 0:
+        my_list.append(number)
+my_list
+
+my_list = [number for number in range(0,1000) if number % 2 == 0]
+
+
+
+def times_tables():
+    lst = []
+    for i in range(10):
+        for j in range (10):
+            lst.append(i*j)
+    return lst
+
+times_tables() == [j*i for i in range(10) for j in range(10)]
+
+
+
+######################### NumPy #############################
+
+import numpy as np
+# Creat Arrays
+mylist = [1, 2, 3]
+x = np.array(mylist)
+x
+
+y = np.array([4, 5, 6])
+y
+
+m = np.array([[7, 8, 9], [10, 11, 12]])
+m
+m.shape
+
+n = np.arrange(0, 30, 2)
+n
+
+n = n.reshape(3,5)
+
+o = np.linspace(0, 4, 9)
+o
+
+o.resize(3,3)
+
+np.ones((3,2))
+np.zeros((2,3))
+np.eye(3)
+np.diag(y)
+np.array([1, 2, 3]*3)
+np.repeat([1,2,3],3)
+
+p = np.ones([2,3],int)
+np.vstack([p, 2*p]) # vertical
+np.hstack([p, 2*p]) # horizontal
+
+### Operations ###
+x + y
+x**2
+x.dot(y)
+z  = np.array([y, y**2])
+z
+z.shape
+z.T
+z.T.shape
+z.dtype
+
+a = np.array([-4, -2, 1, 3, 5])
+a.sum()
+a.max()
+a.mean()
+a.argmax()
+
+### Indexing/Slicing ###
+
+s = np.arange(13)**2
+s
+s[0],s[4],s[0:3]
+s[1:5]
+s[-4:] # last four element of the array
+s[-5::-2] # starting fifth from the end to the beginning of the array and counting backwards by two. 
+
+# two dimensional array 0 to 35
+r = np.arange(36)
+r.resize((6, 6))   # use np.diag(r)
+r[2, 2]
+r[3, 3:6]
+r[:2, :-1]
+r[-1, ::2] # select every second element from the last row
+r[r > 10] # considinal indexing
+r[r > 30] = 30
+r
+
+### Capping the max value of the elements in our array to 30
+
+r2 = r[:3, :3]
+r2
+r2[:] = 0
+r2
+
+r_copy = r.copy()
+r_copy
+
+r_copy[:]=10
+print(r_copy)
+print(r)
+
+### Iterating Over Arrays ###
+test = np.random.randint(0, 10, (4, 3)) # 3 columns 4 rows
+test
+for row in test:
+    print(row)
+
+for i in range(len(test)):
+    print(test[i])
+
+for i, row in enumerate(test):
+    print('row', i, 'is', row)
+
+test2 = test**2
+test2
+
+for i,j in zip(test, test2):
+    print(i, '+', j, '=', i+j)
+
+
+
+##################################################################################################3
+##################### Practice Lession Two #####################
+
+###### The Series Data Structure #######
+import pandas as pd
+pd.Series?
+
+animals = ['Tiger', 'Bear', 'Moose']
+pd.Series(animals)
+
+numbers = [1, 2, 3]
+pd.Series(numbers)
+
+animals = ['Tiger', 'Bear', None]
+pd.Series(animals)
+
+numbers = [1, 2, None]
+pd.Series(numbers)
+
+import numpy as np
+np.nan == None # always false
+np.nan == np.nan # always false
+np.isnan(np.nan) # true
+
+sports = {'Archery': 'Bhutan',
+          'Golf': 'Scotland',
+          'Sumo': 'Japan', 
+          'Taekwondo': 'South Korea'}
+s = pd.Series(sports)
+s
+s.index
+
+s = pd.Series(['Tiger', 'Bear', 'Moose'], index=['India', 'America', 'Canada'])
+s
+
+sports = {'Archery': 'Bhutan',
+          'Golf': 'Scotland',
+          'Sumo': 'Japan',
+          'Taekwondo': 'South Korea'}
+s = pd.Series(sports, index=['Golf', 'Sumo', 'Hockey'])
+s
+
+###### Querying a Series #######
+# To query by numeric location, starting at zero, use the iloc attribute. 
+# To query by the index label, you can use the loc attribute.
+sports = {'Archery': 'Bhutan',
+          'Golf': 'Scotland',
+          'Sumo': 'Japan',
+          'Taekwondo': 'South Korea'}
+s = pd.Series(sports)
+s
+s.iloc[3]
+s.loc['Golf']
+s[3]
+s['Golf']
+
+sports = {99: 'Bhutan',
+          100: 'Scotland',
+          101: 'Japan',
+          102: 'South Korea'}
+s = pd.Series(sports)
+s[0] # error
+
+s = pd.Series([100.00, 120.00, 101.00, 3.00])
+s
+total = 0
+for item in s:
+    total+=item
+print(total)
+
+import numpy as np
+
+total = np.sum(s)
+print(total)
+
+# this creates a big series of random numbers
+s = pd.Series(np.random.randint(0,1000,10000))
+s.head()
+len(s)
+
+# run timeit with our original iterative code. 
+# by default, run 1000 loops, use 100 runs
+%%timeit -n 100
+summary = 0
+for item in s:
+    summary+=item
+
+# Broadingcasting, to apply operations very fast
+%%timeit -n 100
+summary = np.sum(s)
+
+s+=2 # adds two to each item in s using broadcasting
+s.head()
+
+## the series set value method
+%%timeit -n 10
+s = pd.Series(np.random.randint(0,1000,10000))
+for label, value in s.iteritems():
+    s.set_value(label, value+2)
+s.head()   
+# faster way
+%%timeit -n 10
+s = pd.Series(np.random.randint(0,1000,10000))
+s+=2    
+
+s = pd.Series([1, 2, 3])
+s.loc['Animal'] = 'Bears'
+s  
+
+original_sports = pd.Series({'Archery': 'Bhutan',
+                             'Golf': 'Scotland',
+                             'Sumo': 'Japan',
+                             'Taekwondo': 'South Korea'})
+cricket_loving_countries = pd.Series(['Australia',
+                                      'Barbados',
+                                      'Pakistan',
+                                      'England'], 
+                                   index=['Cricket',
+                                          'Cricket',
+                                          'Cricket',
+                                          'Cricket'])
+all_countries = original_sports.append(cricket_loving_countries)
+original_sports
+cricket_loving_countries
+all_countries
+all_countries.loc['Cricket']
+
+###### DataFrame Data Structure #######
+# the heart of Panda's library
+# columns: df[""], df.iloc(x)[" "]
+# rows: df.iloc(x)
+# Index: .loc(), .iloc()
+import pandas as pd
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
+df.head()
+
+df.loc['Store 2']
+type(df.loc['Store 2'])
+df.loc['Store 1']
+df.loc['Store 1', 'Cost'] # display store1 & cost
+df.T # display with switch columns and rows
+df.T.loc['Cost']
+df['Cost'] # cost for all people
+df.loc['Store 1']['Cost']
+df.drop('Store 1')
+df
+
+### Drop a data ###
+# Method 1
+copy_df = df.copy()
+copy_df = copy_df.drop('Store 1')
+copy_df
+
+# Drop has two optional parameters: in place (set to true, updated in placd) and axes (be dropped)
+# Axes: default = 0, if want to drop a column, set to 1
+
+copy_df.drop?
+
+# Method 2: to drop a column
+del copy_df['Name']
+copy_df
+
+# apply 20% discount for all costs
+df['Cost'] *= 0.8
+print(df)
+
+df['Location'] = None
+df
+
+
+###### DataFrame Indexing and Loading #######
+costs = df['Cost']
+costs
+costs+=2
+costs
+
+df
+
+!cat olympics.csv
+# !cat: we can invoke directly using the exclamation point. 
+df = pd.read_csv('olympics.csv')
+df.head() # print the head --- just numbers
+
+# to label the columns and rows
+df = pd.read_csv('olympics.csv', index_col = 0, skiprows=1)
+# skiprows=1: ignore the first row
+# index_col=0: set the first column to be headers
+df.head()
+
+df.columns
+
+for col in df.columns:
+    if col[:2]=='01':
+        df.rename(columns={col:'Gold' + col[4:]}, inplace=True)
+    if col[:2]=='02':
+        df.rename(columns={col:'Silver' + col[4:]}, inplace=True)
+    if col[:2]=='03':
+        df.rename(columns={col:'Bronze' + col[4:]}, inplace=True)
+    if col[:1]=='№':
+        df.rename(columns={col:'#' + col[1:]}, inplace=True) 
+
+df.head()
+
+###### Querying a DataFrame #######
+# Boolean masking is the heart of fast and efficient querying in NumPy. 
+# It's analogous a bit to masking used in other computational areas. 
+# A Boolean mask is an array which can be of one dimension like a series, or two dimensions like a data frame, where each of the values in the array are either true or false.
+# powerful conceptually and is the cornerstone of efficient NumPy and pandas querying. 
+df['Gold'] > 0
+only_gold = df.where(df['Gold'] > 0)
+only_gold.head()
+only_gold['Gold'].count()
+df['Gold'].count()
+
+only_gold = only_gold.dropna()
+only_gold.head()
+
+# In this way: pandas automatically filters out the rows with now values. 
+only_gold = df[df['Gold'] > 0]
+only_gold.head()
+
+# we could create a mask for all of those countries who have received a gold in the summer Olympics 
+# and logically order that with all of those countries who have received a gold in the winter Olympics. 
+len(df[(df['Gold'] > 0) | (df['Gold.1'] > 0)]) # find the count
+
+# Have there been any countries who have only won a gold in the winter Olympics and never in the summer Olympics? 
+df[(df['Gold.1'] > 0) & (df['Gold'] == 0)]
+
+# print the name of buyer whose product costs over $3
+df['Name'][df['Cost']>3]
+# each Boolean mask needs to be encased in parenthesis because of the order of operations.
+
+###### Indexing DataFrame #######
+df.head()
+
+# index by the number of gold won at summer games
+df['country'] = df.index
+df = df.set_index('Gold')
+df.head()
+
+# promotes the index into a column and create the default numbered index
+df = df.reset_index()
+df.head()
+
+
+df = pd.read_csv('census.csv')
+df.head()
+
+df['SUMLEV'].unique() # to check whether only two values
+
+df=df[df['SUMLEV'] == 50]
+df.head()
+
+# we're going to look at to just the total population estimates and the total number of births. 
+# creat a list of column names that we want to keep
+columns_to_keep = ['STNAME',
+                   'CTYNAME',
+                   'BIRTHS2010',
+                   'BIRTHS2011',
+                   'BIRTHS2012',
+                   'BIRTHS2013',
+                   'BIRTHS2014',
+                   'BIRTHS2015',
+                   'POPESTIMATE2010',
+                   'POPESTIMATE2011',
+                   'POPESTIMATE2012',
+                   'POPESTIMATE2013',
+                   'POPESTIMATE2014',
+                   'POPESTIMATE2015']
+df = df[columns_to_keep]
+df.head()
+
+# break down estimates by state and county, so can load the data and set the index to be a combination of the state and county values and see how pandas handles it in a DataFrame.
+# creating a list of the column identifiers we want to have indexed
+df = df.set_index(['STNAME', 'CTYNAME'])
+df.head()
+
+#  how hierarchical indices works: for rows and columns
+df.loc['Michigan', 'Washtenaw County']
+
+df.loc[ [('Michigan', 'Washtenaw County'),
+         ('Michigan', 'Wayne County')] ]
+
+## reindex first by store, then by person. Name these indexes 'Location' and 'Name', then add a new entry with the value of: 
+## Name:'Kevyn', Item purchased: 'Kitty Food', Cost:3.00 Location:'Store 2'.
+df = df.set_index([df.index, 'Name'])
+df.index.names = ['Location', 'Name']
+df = df.append(pd.Series(data={'Cost': 3.00, 'Item Purchased': 'Kitty Food'}, name=('Store 2', 'Kevyn')))
+df
+###### Missing Values #######
+
+df = pd.read_csv('log.csv')
+df
+#  This function takes a number or parameters, for instance, you could pass in a single value which is called a scalar value to change all of the missing data to one value. 
+#  The two common fill values are ffill and bfill. ffill is for forward filling and it updates an na value for a particular cell with the value from the previous row. 
+df.fillna?
+
+df = df.set_index('time')
+df = df.sort_index()
+df
+
+df = df.reset_index()
+df = df.set_index(['time', 'user'])
+df
+
+df = df.fillna(method='ffill')
+df.head()
+
+
+##################################################################################################
+##################### Practice Lession Three #####################
+
+##########  Merging Dataframes ###########
+import pandas as pd
+
+df = pd.DataFrame([{'Name': 'Chris', 'Item Purchased': 'Sponge', 'Cost': 22.50},
+                   {'Name': 'Kevyn', 'Item Purchased': 'Kitty Litter', 'Cost': 2.50},
+                   {'Name': 'Filip', 'Item Purchased': 'Spoon', 'Cost': 5.00}],
+                  index=['Store 1', 'Store 1', 'Store 2'])
+df
+
+# add a new column Data
+df['Date'] = ['December 1', 'January 1', 'mid-May']
+df
+
+df['Delivered'] = True
+df
+
+df['Feedback'] = ['Positive', None, 'Negative']
+df
+
+adf = df.reset_index() # label is assgined as 1,2, 3,...
+# row 0 --> December, row 2 --> mid-May
+adf['Date'] = pd.Series({0: 'December 1', 2: 'mid-May'})
+adf
+
+# Join two dataframe together
+staff_df = pd.DataFrame([{'Name': 'Kelly', 'Role': 'Director of HR'},
+                         {'Name': 'Sally', 'Role': 'Course liasion'},
+                         {'Name': 'James', 'Role': 'Grader'}])
+staff_df = staff_df.set_index('Name')
+student_df = pd.DataFrame([{'Name': 'James', 'School': 'Business'},
+                           {'Name': 'Mike', 'School': 'Law'},
+                           {'Name': 'Sally', 'School': 'Engineering'}])
+student_df = student_df.set_index('Name')
+print(staff_df.head())
+print()
+print(student_df.head())
+
+# get the union of these people
+pd.merge(staff_df, student_df, how='outer', left_index=True, right_index=True)
+# get the intersaction, student & staff
+pd.merge(staff_df, student_df, how='inner', left_index=True, right_index=True)
+# set addition, get a list of all staff and their roles if they are also student
+pd.merge(staff_df, student_df, how='left', left_index=True, right_index=True)
+# get a list of all students and their roles if they are also staff
+pd.merge(staff_df, student_df, how='right', left_index=True, right_index=True)
+# use the column to name to achieve the join
+staff_df = staff_df.reset_index()
+student_df = student_df.reset_index()
+pd.merge(staff_df, student_df, how='left', left_on='Name', right_on='Name')
+
+
+# if has conflicts
+# different location types
+# appends an _x or _y to help differentiate between which index went with which column of data. 
+# The _x is always the left DataFrame information, and the _ y is always the right DataFrame information.
+staff_df = pd.DataFrame([{'Name': 'Kelly', 'Role': 'Director of HR', 'Location': 'State Street'},
+                         {'Name': 'Sally', 'Role': 'Course liasion', 'Location': 'Washington Avenue'},
+                         {'Name': 'James', 'Role': 'Grader', 'Location': 'Washington Avenue'}])
+student_df = pd.DataFrame([{'Name': 'James', 'School': 'Business', 'Location': '1024 Billiard Avenue'},
+                           {'Name': 'Mike', 'School': 'Law', 'Location': 'Fraternity House #22'},
+                           {'Name': 'Sally', 'School': 'Engineering', 'Location': '512 Wilson Crescent'}])
+pd.merge(staff_df, student_df, how='left', left_on='Name', right_on='Name')
+
+
+### multi-indexing & multi-columns #####
+staff_df = pd.DataFrame([{'First Name': 'Kelly', 'Last Name': 'Desjardins', 'Role': 'Director of HR'},
+                         {'First Name': 'Sally', 'Last Name': 'Brooks', 'Role': 'Course liasion'},
+                         {'First Name': 'James', 'Last Name': 'Wilde', 'Role': 'Grader'}])
+student_df = pd.DataFrame([{'First Name': 'James', 'Last Name': 'Hammond', 'School': 'Business'},
+                           {'First Name': 'Mike', 'Last Name': 'Smith', 'School': 'Law'},
+                           {'First Name': 'Sally', 'Last Name': 'Brooks', 'School': 'Engineering'}])
+staff_df
+student_df
+pd.merge(staff_df, student_df, how='inner', left_on=['First Name','Last Name'], right_on=['First Name','Last Name'])
+
+
+################## Pandas Idioms ######################
+# Chain Indexing:
+# df.loc[""][""], panda coudd return a copy of view depending on numpy
+import pandas as pd
+df = pd.read_csv('census.csv')
+df
+# a object returns a reference to that object
+# Method 1: 
+(df.where(df['SUMLEV']==50)
+    .dropna()
+    .set_index(['STNAME','CTYNAME'])
+    .rename(columns={'ESTIMATESBASE2010': 'Estimates Base 2010'}))
+# Method 2: faster
+df = df[df['SUMLEV']==50]
+df.set_index(['STNAME','CTYNAME'], inplace=True)
+df.rename(columns={'ESTIMATESBASE2010': 'Estimates Base 2010'})
+
+# applymap in Pandas: you provide some function which should operate on each cell of a DataFrame, and the return set is itself a DataFrame. 
+import numpy as np
+def min_max(row): # want to create some new columns for min and max
+    data = row[['POPESTIMATE2010',
+                'POPESTIMATE2011',
+                'POPESTIMATE2012',
+                'POPESTIMATE2013',
+                'POPESTIMATE2014',
+                'POPESTIMATE2015']]
+    return pd.Series({'min': np.min(data), 'max': np.max(data)})
+# return a new series object
+df.apply(min_max, axis=1) # to apply across all rows, axis=1
+
+# add new data to the existing DataFrame
+import numpy as np
+def min_max(row):
+    data = row[['POPESTIMATE2010',
+                'POPESTIMATE2011',
+                'POPESTIMATE2012',
+                'POPESTIMATE2013',
+                'POPESTIMATE2014',
+                'POPESTIMATE2015']]
+    row['max'] = np.max(data)
+    row['min'] = np.min(data)
+    return row
+df.apply(min_max, axis=1)
+
+# a new features of the API: used with lambda
+rows = ['POPESTIMATE2010',
+        'POPESTIMATE2011',
+        'POPESTIMATE2012',
+        'POPESTIMATE2013',
+        'POPESTIMATE2014',
+        'POPESTIMATE2015']
+df.apply(lambda x: np.max(x[rows]), axis=1)
+
+
+################### Group By ########################
+import pandas as pd
+import numpy as np
+df = pd.read_csv('census.csv')
+df = df[df['SUMLEV']==50]
+df
+# for each state we reduce the data frame and calculate the average. 
+%%timeit -n 10
+for state in df['STNAME'].unique():
+    avg = np.average(df.where(df['STNAME']==state).dropna()['CENSUS2010POP'])
+    print('Counties in state ' + state + ' have an average population of ' + str(avg))
+# same thing by group project --- much more faster!!!
+%%timeit -n 10
+for group, frame in df.groupby('STNAME'):
+    avg = np.average(frame['CENSUS2010POP'])
+    print('Counties in state ' + group + ' have an average population of ' + str(avg))
+df.head()
+
+# create a new function: 
+# regroup the data into group numbers, much light weight hashing
+df = df.set_index('STNAME')
+def fun(item):
+    if item[0]<'M':
+        return 0
+    if item[0]<'Q':
+        return 1
+    return 2
+# Split: 
+for group, frame in df.groupby(fun):
+    print('There are ' + str(len(frame)) + ' records in group ' + str(group) + ' for processing.')
+
+# A common work flow with group bias that you split your data, you apply some function, then you combine the results.
+    
+# Apply:   
+df = pd.read_csv('census.csv')
+df = df[df['SUMLEV']==50]
+# with agg, pass in a dictionary of the column names and function that you want to apply
+df.groupby('STNAME').agg({'CENSUS2010POP': np.average})
+
+# want to calculate the total weight by category: 
+print(df.groupby('Category').apply(lambda df,a,b: sum(df[a] * df[b]), 'Weight (oz.)', 'Quantity'))
+# Or alternatively without using a lambda:
+def totalweight(df, w, q):
+       return sum(df[w] * df[q])
+print(df.groupby('Category').apply(totalweight, 'Weight (oz.)', 'Quantity'))
+
+# the series groupby: only one column of data, group it by index using level parameter
+print(type(df.groupby(level=0)['POPESTIMATE2010','POPESTIMATE2011']))
+print(type(df.groupby(level=0)['POPESTIMATE2010']))
+(df.set_index('STNAME').groupby(level=0)['CENSUS2010POP']
+    .agg({'avg': np.average, 'sum': np.sum}))
+# the data frame groupby: two columns
+(df.set_index('STNAME').groupby(level=0)['POPESTIMATE2010','POPESTIMATE2011']
+    .agg({'avg': np.average, 'sum': np.sum}))
+
+(df.set_index('STNAME').groupby(level=0)['POPESTIMATE2010','POPESTIMATE2011']
+    .agg({'POPESTIMATE2010': np.average, 'POPESTIMATE2011': np.sum}))
+
+
+###############3## Scales ######################
+df = pd.DataFrame(['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D'],
+                  index=['excellent', 'excellent', 'excellent', 'good', 'good', 'good', 'ok', 'ok', 'ok', 'poor', 'poor'])
+df.rename(columns={0: 'Grades'}, inplace=True)
+df
+
+# set a column to categorical data by using as type method
+df['Grades'].astype('category').head()
+
+grades = df['Grades'].astype('category',
+                             categories=['D', 'D+', 'C-', 'C', 'C+', 'B-', 'B', 'B+', 'A-', 'A', 'A+'],
+                             ordered=True)
+grades.head()
+grades > 'C'
+
+
+df = pd.read_csv('census.csv')
+df = df[df['SUMLEV']==50]
+df = df.set_index('STNAME').groupby(level=0)['CENSUS2010POP'].agg({'avg': np.average})
+pd.cut(df['avg'],10) # the states was assigned to 10 categories/intervals
+
+
+################# Pivot Tables ###############
+# the rows represent one variable that you're interested in
+#http://open.canada.ca/data/en/dataset/98f1a129-f628-4ce4-b24d-6f16bf24dd64
+df = pd.read_csv('cars.csv')
+df.head()
+# compare the makes versus the years and we want to do the comparison in terms of battery capacity
+df.pivot_table(values='(kW)', index='YEAR', columns='Make', aggfunc=np.mean)
+df.pivot_table(values='(kW)', index='YEAR', columns='Make', aggfunc=[np.mean,np.min], margins=True) # overall mean and min values for given year
+
+# shows the mean price and mean rating for every 'Manufacturer'/'Bike Type'
+print(pd.pivot_table(Bikes, index=['Manufacturer','Bike Type']))
+
+################ Date Functionality in Pandas ######################
+import pandas as pd
+import numpy as np
+# Timestamp
+pd.Timestamp('9/1/2016 10:05AM')
+# Period
+pd.Period('1/2016')
+
+# DatetimeIndex
+t1 = pd.Series(list('abc'), [pd.Timestamp('2016-09-01'), pd.Timestamp('2016-09-02'), pd.Timestamp('2016-09-03')])
+t1
+type(t1.index)
+# PeriodIndex
+t2 = pd.Series(list('def'), [pd.Period('2016-09'), pd.Period('2016-10'), pd.Period('2016-11')])
+t2
+type(t2.index)
+
+# Converting to Datetime
+d1 = ['2 June 2013', 'Aug 29, 2014', '2015-06-26', '7/12/16']
+ts3 = pd.DataFrame(np.random.randint(10, 100, (4,2)), index=d1, columns=list('ab'))
+ts3
+ts3.index = pd.to_datetime(ts3.index)
+ts3
+# change the date parse
+pd.to_datetime('4.7.12', dayfirst=True)
+
+# Timedeltas: diff in times
+pd.Timestamp('9/3/2016')-pd.Timestamp('9/1/2016')
+pd.Timestamp('9/2/2016 8:10AM') + pd.Timedelta('12D 3H') # 12 days and 3 hourse past
+
+# Working with Dates in a Dataframe
+dates = pd.date_range('10-01-2016', periods=9, freq='2W-SUN') # bi-weekly, every Sunday
+dates
+# create some random data
+df = pd.DataFrame({'Count 1': 100 + np.random.randint(-5, 10, 9).cumsum(),
+                  'Count 2': 120 + np.random.randint(-5, 10, 9)}, index=dates)
+df
+
+# check what day of the week a specific date is
+df.index.weekday_name
+df.diff()
+
+# what the mean count is for each month in dataframe
+df.resample('M').mean()
+df['2017']
+df['2016-12']
+df['2016-12':]
+
+# change the frequency
+df.asfreq('W', method='ffill')
+
+# visulize the time series
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+df.plot()
+
+
+##################################################################################################
+##################### Practice Lession Four #####################
+
+#### Distributions in Pandas ###
+import pandas as pd
+import numpy as np
+# np.random.binomial(n, p, size) n--> times, size--> simulation
+# even weighted
+np.random.binomial(1, 0.5) # run 1 time, prob of get 0 is 0.5, got 1 or 0
+np.random.binomial(1000, 0.5)/1000 # run 1000 times, got near 0.5
+
+# NOT even weighted
+chance_of_tornado = 0.01/100
+np.random.binomial(100000, chance_of_tornado)
+
+
+chance_of_tornado = 0.01
+tornado_events = np.random.binomial(1, chance_of_tornado, 1000000)
+# sampling the distribution
+two_days_in_a_row = 0
+for j in range(1,len(tornado_events)-1):
+    if tornado_events[j]==1 and tornado_events[j-1]==1:
+        two_days_in_a_row+=1
+
+print('{} tornadoes back to back in {} years'.format(two_days_in_a_row, 1000000/365))
+
+### More distributions ###
+np.random.uniform(0, 1)
+np.random.normal(0.75)
+
+# Formula for standard deviation:
+distribution = np.random.normal(0.75,size=1000)
+np.sqrt(np.sum((np.mean(distribution)-distribution)**2)/len(distribution))
+
+np.std(distribution)
+
+# shape of the tail of a distribution
+import scipy.stats as stats
+stats.kurtosis(distribution)
+# negative value means the curve is slightly more flat than a normal distribution
+# positive value means the curve is slightly more peaky than a normal distribution. 
+stats.skew(distribution)
+
+# df increases, the skew moves from left to center, skew decreases
+chi_squared_df2 = np.random.chisquare(2, size=10000)
+stats.skew(chi_squared_df2)
+
+chi_squared_df5 = np.random.chisquare(5, size=10000)
+stats.skew(chi_squared_df5)
+
+#### Modality #### multiple peaks
+%matplotlib inline
+import matplotlib
+import matplotlib.pyplot as plt
+# two peaks: bio-modal
+output = plt.hist([chi_squared_df2,chi_squared_df5], bins=50, histtype='step', 
+                  label=['2 degrees of freedom','5 degrees of freedom'])
+plt.legend(loc='upper right')
+
+#### Hypo testing ####
+import os
+os.chdir(r'path')
+df = pd.read_csv('grades.csv')
+df.head()
+len(df)
+early = df[df['assignment1_submission'] <= '2015-12-31']
+late = df[df['assignment1_submission'] > '2015-12-31']
+early.mean()
+late.mean()
+
+from scipy import stats
+stats.ttest_ind? # gives t-stat and p-value
+stats.ttest_ind(early['assignment1_grade'], late['assignment1_grade'])
+stats.ttest_ind(early['assignment2_grade'], late['assignment2_grade'])
+stats.ttest_ind(early['assignment3_grade'], late['assignment3_grade'])
+
+# to solve p-hacking problem, use Bonferroni correction--> righten alpha value
+
